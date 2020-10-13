@@ -170,9 +170,8 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
-    val map: MutableMap<String, Int> = mutableMapOf<String, Int>()
+    val map: MutableMap<String, Int> = mutableMapOf()
     val writer = File(outputName).bufferedWriter()
-
     for (line in File(inputName).readLines()) {
         if (map[line] == null) map[line] = 1
         else map[line] = map[line]!! + 1
@@ -181,8 +180,8 @@ fun sortSequence(inputName: String, outputName: String) {
     var max = 0
     var keyMax = ""
     for ((key, value) in map)
-        if (map[key]!! > max) {
-            max = map[key]!!
+        if (value > max) {
+            max = value
             keyMax = key
         }
     for (line in File(inputName).readLines()) {
