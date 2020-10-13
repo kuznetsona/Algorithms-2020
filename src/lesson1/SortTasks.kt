@@ -217,7 +217,7 @@ fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
     var j = first.size
     var i = 0
     for (index in second.indices) {
-        if (second[j]!! >= first[i] && i < j || j >= second.size) {
+        if ((second[j]!! >= first[i] && i < j) || j >= second.size) {
             second[index] = first[i]
             i++
         } else {
@@ -226,5 +226,6 @@ fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
 
         }
     }
+
 }
 
