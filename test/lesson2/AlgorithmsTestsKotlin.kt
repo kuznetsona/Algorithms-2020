@@ -2,6 +2,7 @@ package lesson2
 
 import org.junit.jupiter.api.Tag
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class AlgorithmsTestsKotlin : AbstractAlgorithmsTests() {
     @Test

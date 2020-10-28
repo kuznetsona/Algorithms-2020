@@ -2,7 +2,7 @@
 
 package lesson1
 
-import java.io.File as File
+import java.io.File
 
 /**
  * Сортировка времён
@@ -53,24 +53,20 @@ fun sortTimes(inputName: String, outputName: String) {
     }
     timeAM.sort()
     timePM.sort()
-    var i = 0
-    while (timeAM[i].split(':')[0] == "00") {
-        timeAM.add(i, "12" + timeAM[i].substring(2, 11))
-        timeAM.removeAt(i + 1)
-        i++
-    }
-    i = 0
-    while (timePM[i].split(':')[0] == "00") {
-        timePM.add(i, "12" + timePM[i].substring(2, 11))
-        timePM.removeAt(i + 1)
-        i++
-    }
     for (index in timeAM) {
-        writer.write(index.trim())
+        if (index.substring(0, 2) == "00") {
+            writer.write("12" + index.substring(2, 11))
+        } else {
+            writer.write(index.trim())
+        }
         writer.newLine()
     }
     for (index in timePM) {
-        writer.write(index.trim())
+        if (index.substring(0, 2) == "00") {
+            writer.write(("12" + index.substring(2, 11)).trim())
+        } else {
+            writer.write(index.trim())
+        }
         writer.newLine()
     }
     writer.close()
@@ -172,30 +168,42 @@ fun sortTemperatures(inputName: String, outputName: String) {
 fun sortSequence(inputName: String, outputName: String) {
     val map: MutableMap<String, Int> = mutableMapOf()
     val writer = File(outputName).bufferedWriter()
+    var keyMax = "0"
     for (line in File(inputName).readLines()) {
+        if (keyMax.toInt() < line.toInt()) keyMax = line
         if (map[line] == null) map[line] = 1
         else map[line] = map[line]!! + 1
     }
     map.toSortedMap()
     var max = 0
-    var keyMax = ""
-    for ((key, value) in map)
+    for ((key, value) in map) {
+        if (value == max) {
+            if (keyMax > key) {
+                max = value
+                keyMax = key
+            }
+        }
         if (value > max) {
             max = value
             keyMax = key
         }
+    }
     for (line in File(inputName).readLines()) {
         if (line != keyMax) {
             writer.write(line.trim())
             writer.newLine()
         }
-        for (i in 0..max) {
-            writer.write(keyMax)
-            writer.newLine()
-        }
     }
+    for (i in 0 until max) {
+        writer.write(keyMax)
+        writer.newLine()
+    }
+
     writer.close()
 }
+
+
+
 
 /**
  * Соединить два отсортированных массива в один
@@ -211,20 +219,16 @@ fun sortSequence(inputName: String, outputName: String) {
  *
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
  */
-//
 fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
-    var j = first.size
-    var i = 0
-    for (index in second.indices) {
-        if ((second[j]!! >= first[i] && i < j) || j >= second.size) {
-            second[index] = first[i]
-            i++
+    var indexI = 0
+    var indexJ = first.size
+    for (i in second.indices) {
+        if (indexJ >= second.size || (indexI < first.size && first[indexI] <= second[indexJ]!!)) {
+            second[i] = first[indexI]
+            indexI++
         } else {
-            second[index] = second[i]
-            j++
-
+            second[i] = second[indexJ]
+            indexJ++
         }
     }
-
 }
-

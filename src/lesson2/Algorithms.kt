@@ -2,6 +2,8 @@
 
 package lesson2
 
+import kotlin.math.sqrt
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -79,8 +81,11 @@ fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
  * Общий комментарий: решение из Википедии для этой задачи принимается,
  * но приветствуется попытка решить её самостоятельно.
  */
+//O(choiceInterval * log (menNumber))
 fun josephTask(menNumber: Int, choiceInterval: Int): Int {
-    TODO()
+    var x = menNumber * choiceInterval
+    while (x > menNumber) x = (choiceInterval * (x - menNumber) - 1) / (choiceInterval - 1)
+    return x
 }
 
 /**
@@ -109,5 +114,17 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Единица простым числом не считается.
  */
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    var count = 0
+    for (i in 1..limit) count += primesNumber(i)
+    return count
+}
+
+fun primesNumber(i: Int): Int {
+    if (i < 2) return 0
+    if (i == 2) return 1
+    if (i % 2 == 0) return 0
+    for (n in 3..sqrt(i.toDouble()).toInt() step 2) {
+        if (i % n == 0) return 0
+    }
+    return 1
 }
