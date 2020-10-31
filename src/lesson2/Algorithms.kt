@@ -86,6 +86,7 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
     var x = menNumber * choiceInterval
     while (x > menNumber) x = (choiceInterval * (x - menNumber) - 1) / (choiceInterval - 1)
     return x
+
 }
 
 /**
@@ -113,6 +114,7 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
  */
+//трудоёмкость: O(limit^2)
 fun calcPrimesNumber(limit: Int): Int {
     var count = 0
     for (i in 1..limit) count += primesNumber(i)

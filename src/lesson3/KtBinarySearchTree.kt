@@ -1,12 +1,13 @@
 package lesson3
 
+import lesson1.sortTemperatures
 import java.util.*
 import kotlin.math.max
 
 // attention: Comparable is supported but Comparator is not
 class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSortedSet<T> {
 
-    private class Node<T>(
+    class Node<T>(
         val value: T
     ) {
         var left: Node<T>? = null
@@ -79,17 +80,55 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      *
      * Средняя
      */
+    //Время = O(logN)
     override fun remove(element: T): Boolean {
-        TODO()
+        val current = removeFunction(root, element)
+        if (!current.second) return false
+        root = current.first
+        size--
+        return true
     }
 
-    override fun comparator(): Comparator<in T>? =
-        null
+    private fun removeFunction(current: Node<T>?, element: T): Pair<Node<T>?, Boolean> {
+        if (current == null) return Pair(current, false)
+        val compare = element.compareTo(current.value)
+        if (compare < 0) {
+            val pair = removeFunction(current.left, element)
+            current.left = pair.first
+            return Pair(current, pair.second)
+        } else if (compare > 0) {
+            val pair = removeFunction(current.right, element)
+            current.right = pair.first
+            return Pair(current, pair.second)
+        } else {
+            return if (current.left == null && current.right == null) {
+                Pair(null, true)
+            } else if (current.left == null) {
+                Pair(current.right, true)
+            } else if (current.right == null) {
+                Pair(current.left, true)
+            } else {
+                var min = current.right
+                while (min!!.left != null) min = min.left
+                val node = Node(min.value)
+                node.right = removeFunction(current.right, min.value).first
+                node.left = current.left
+                Pair(node, true)
+            }
+        }
+    }
 
-    override fun iterator(): MutableIterator<T> =
-        BinarySearchTreeIterator()
+    override fun comparator(): Comparator<in T>? = null
+
+    override fun iterator(): MutableIterator<T> = BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
+        private var array = ArrayDeque<Node<T>>()
+        private var node: Node<T>? = null
+
+        init {
+            if (root != null) array.addFirst(root!!)
+        }
 
         /**
          * Проверка наличия следующего элемента
@@ -100,11 +139,10 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          * Спецификация: [java.util.Iterator.hasNext] (Ctrl+Click по hasNext)
          *
          * Средняя
+         * Время - O(1)
          */
-        override fun hasNext(): Boolean {
-            // TODO
-            throw NotImplementedError()
-        }
+        //Время = O(1)
+        override fun hasNext(): Boolean = array.isNotEmpty()
 
         /**
          * Получение следующего элемента
@@ -119,9 +157,13 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
+        //Время = O(logN)
         override fun next(): T {
-            // TODO
-            throw NotImplementedError()
+            if (array.isEmpty()) throw IllegalStateException()
+            val next = array.pollFirst()
+            node = next
+            if (next.right != null) array.addFirst(next.right!!)
+            return next.value
         }
 
         /**

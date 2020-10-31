@@ -183,6 +183,32 @@ abstract class AbstractTaskTests : AbstractFileTests() {
 
     protected fun sortSequence(sortSequence: (String, String) -> Unit) {
         try {
+            sortSequence("input/NewTest_sortSequence_1.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                        2
+                        3
+                        4
+                        5
+                        6
+                        7
+                        8
+                        9
+                        10
+                        11
+                        12
+                        13
+                        1
+                        1
+                        1
+                        1
+                    """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
             sortSequence("input/seq_in1.txt", "temp.txt")
             assertFileContent(
                 "temp.txt",
@@ -323,9 +349,17 @@ abstract class AbstractTaskTests : AbstractFileTests() {
     }
 
     protected fun mergeArrays(mergeArrays: (Array<Int>, Array<Int?>) -> Unit) {
-        val result = arrayOf(null, null, null, null, null, 1, 3, 9, 13, 18, 23)
+        var result = arrayOf(null, null, null, null, null, 1, 3, 9, 13, 18, 23)
         mergeArrays(arrayOf(4, 9, 15, 20, 23), result)
         assertArrayEquals(arrayOf(1, 3, 4, 9, 9, 13, 15, 18, 20, 23, 23), result)
+
+        result = arrayOf(null, null, null, 6, 6, 6)
+        mergeArrays(arrayOf(6, 6, 6), result)
+        assertArrayEquals(arrayOf(6, 6, 6, 6, 6, 6), result)
+
+        result = arrayOf(null, null, null, 2, 65, 97)
+        mergeArrays(arrayOf(46, 198, 2090), result)
+        assertArrayEquals(arrayOf(2, 46, 65, 97, 198, 2090), result)
 
         fun testGeneratedArrays(
             firstSize: Int,
@@ -344,4 +378,5 @@ abstract class AbstractTaskTests : AbstractFileTests() {
 
         println("mergeArrays: $perf")
     }
+
 }
