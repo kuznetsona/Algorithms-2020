@@ -2,6 +2,9 @@
 
 package lesson6
 
+import lesson6.impl.GraphBuilder
+import java.util.*
+
 /**
  * Эйлеров цикл.
  * Средняя
@@ -28,10 +31,38 @@ package lesson6
  * Справка: Эйлеров цикл -- это цикл, проходящий через все рёбра
  * связного графа ровно по одному разу
  */
-fun Graph.findEulerLoop(): List<Graph.Edge> {
-    TODO()
+fun Graph.isEulerGraph(): Boolean {
+    for (vertex in vertices) {
+        if (getNeighbors(vertex).size % 2 != 0)
+            return false
+    }
+    return true
 }
-
+fun Graph.findEulerLoop(): List<Graph.Edge> {
+    if (vertices.isEmpty() || !isEulerGraph()) return emptyList()
+    val answer = mutableListOf<Graph.Edge>()
+    val curAnswer = Stack<Graph.Vertex>()
+    curAnswer.push(vertices.first())
+    val edges = this.edges
+    while (curAnswer.isNotEmpty()) {
+        val currentVertex = curAnswer.peek()
+        for (vertex in vertices) {
+            val edge = getConnection(currentVertex, vertex) ?: continue
+            if (edges.contains(edge)) {
+                curAnswer.push(vertex)
+                edges.remove(edge)
+                break
+            }
+        }
+        if (currentVertex == curAnswer.peek()){
+            curAnswer.pop()
+            if (curAnswer.isNotEmpty()) {
+                answer.add(getConnection(currentVertex, curAnswer.peek())!!)
+            }
+        }
+    }
+    return answer
+}
 /**
  * Минимальное остовное дерево.
  * Средняя
@@ -61,7 +92,17 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
  * J ------------ K
  */
 fun Graph.minimumSpanningTree(): Graph {
-    TODO()
+    if (vertices.isEmpty()) return GraphBuilder().build()
+    val answer = GraphBuilder()
+    val begin = vertices.first()
+    for (vertex in vertices) {
+        answer.addVertex(vertex.name)
+    }
+    val shortestPaths = shortestPath(begin)
+    for ((k, v) in shortestPaths) {
+        if (v.prev != null) answer.addConnection(v.prev, k, 1)
+    }
+    return answer.build()
 }
 
 /**
