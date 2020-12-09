@@ -3,6 +3,7 @@ package lesson5
 /**
  * Множество(таблица) с открытой адресацией на 2^bits элементов без возможности роста.
  */
+@Suppress("UNCHECKED_CAST")
 class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T>() {
     init {
         require(bits in 2..31)
@@ -13,6 +14,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
     private val storage = Array<Any?>(capacity) { null }
 
     override var size: Int = 0
+
+    private object DELETED
 
     /**
      * Индекс в таблице, начиная с которого следует искать данный элемент
@@ -74,9 +77,22 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Спецификация: [java.util.Set.remove] (Ctrl+Click по remove)
      *
      * Средняя
+     * время - O(1) - лучший случай
+     * O(n) - худший случай
+     * ресурсоемкость - S(1)
      */
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        if (!contains(element)) return false
+        val startIndex = element.startingIndex()
+        var index = startIndex
+        var current = storage[index]
+        while (current != element) {
+            index = (index + 1) % capacity
+            current = storage[index]
+        }
+        storage[index] = DELETED
+        size--
+        return true
     }
 
     /**
@@ -89,7 +105,36 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя (сложная, если поддержан и remove тоже)
      */
-    override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+    override fun iterator(): MutableIterator<T> = OpenAddressingSetIterator()
+
+    private inner class OpenAddressingSetIterator internal constructor() : MutableIterator<T> {
+        var index = 0
+        var element: T? = null
+        var indexElements = 0
+        //время/ресурсоемкость - O(1)
+        override fun hasNext(): Boolean {
+            return indexElements < size
+        }
+
+        //вермя/ресурсоемкость -  O(n)
+        override fun next(): T {
+            if (!hasNext()) throw NoSuchElementException()
+            while (storage[index] == null || storage[index] == DELETED) {
+                index++
+            }
+            element = storage[index] as T
+            index++
+            indexElements++
+            return element as T
+        }
+
+        //время/ресурсоемкость - O(1)
+        override fun remove() {
+            checkNotNull(element)
+            storage[index - 1] = DELETED
+            indexElements--
+            size--
+            element = null
+        }
     }
 }

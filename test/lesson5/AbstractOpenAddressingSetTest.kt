@@ -76,7 +76,11 @@ abstract class AbstractOpenAddressingSetTest {
                 )
             }
         }
+        //test
+        val testRemove = mutableSetOf<String>()
+        assertFalse(testRemove.remove("erhty56gsrt"))
     }
+
 
     protected fun doIteratorTest() {
         val random = Random()
@@ -113,11 +117,14 @@ abstract class AbstractOpenAddressingSetTest {
                 controlSet.isEmpty(),
                 "OpenAddressingSetIterator doesn't traverse the entire set."
             )
-            assertFailsWith<IllegalStateException>("Something was supposedly returned after the elements ended") {
+            assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
                 openAddressingSetIter.next()
             }
             println("All clear!")
         }
+        //test
+        val testIterator = mutableSetOf<String>()
+        assertFailsWith<NoSuchElementException> { testIterator.iterator().next() }
     }
 
     protected fun doIteratorRemoveTest() {
@@ -175,5 +182,10 @@ abstract class AbstractOpenAddressingSetTest {
             }
             println("All clear!")
         }
+        //test
+        val testIteratorRemove = mutableSetOf("1", "asdf", "qwerty", "456fgdb", " ..,, fd")
+        val finalIteratorRemove = mutableSetOf("1", "asdf", "456fgdb", " ..,, fd")
+        testIteratorRemove.remove("qwerty")
+        assertEquals(finalIteratorRemove, testIteratorRemove)
     }
 }

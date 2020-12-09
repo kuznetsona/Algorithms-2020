@@ -29,9 +29,12 @@ abstract class AbstractGraphTests {
     }
 
     fun findEulerLoop(findEulerLoop: Graph.() -> List<Graph.Edge>) {
-        val emptyGraph = GraphBuilder().build()
-        val emptyLoop = emptyGraph.findEulerLoop()
-        assertTrue(emptyLoop.isEmpty(), "Euler loop should be empty for the empty graph")
+        val graphTest = GraphBuilder().apply {
+            addVertex("A")
+        }.build()
+        val graphOne = graphTest.findEulerLoop()
+        graphOne.assert(shouldExist = true, graph = graphTest)
+
         val noEdgeGraph = GraphBuilder().apply {
             addVertex("A")
             addVertex("B")
@@ -124,6 +127,16 @@ abstract class AbstractGraphTests {
     }
 
     fun minimumSpanningTree(minimumSpanningTree: Graph.() -> Graph) {
+        val graphTest = GraphBuilder().apply {
+            val e1 = addVertex("A")
+            val e2 = addVertex("B")
+            val e3 = addVertex("C")
+            addConnection(e1, e2)
+            addConnection(e2, e3)
+            addConnection(e1, e3)
+        }.build()
+        val spanningTree = graphTest.minimumSpanningTree()
+        assertEquals(2, spanningTree.edges.size)
         val emptyGraph = GraphBuilder().build()
         assertTrue(emptyGraph.minimumSpanningTree().edges.isEmpty())
         val graph = GraphBuilder().apply {
@@ -181,6 +194,7 @@ abstract class AbstractGraphTests {
         val tree3 = graph3.minimumSpanningTree()
         assertEquals(4, tree3.edges.size)
         assertEquals(4, tree3.findBridges().size)
+
     }
 
     fun largestIndependentVertexSet(largestIndependentVertexSet: Graph.() -> Set<Graph.Vertex>) {
